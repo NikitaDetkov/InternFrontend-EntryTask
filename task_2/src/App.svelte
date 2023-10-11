@@ -2,46 +2,73 @@
   import svelteLogo from './assets/svelte.svg'
   import viteLogo from '/vite.svg'
   import Counter from './lib/Counter.svelte'
+
+  let exchangeRates = {};
+  let currencies = {};
+
+  let valueElems = [0, 0];
+  let currencieElems = ['USD', 'USD']
+
+  let nigga = 'sdasda';
+
+  async function getExchangeRates() {
+    let url = 'https://open.er-api.com/v6/latest/USD';
+    let response = await fetch(url);
+
+    exchangeRates = await response.json();
+    currencies = exchangeRates.rates;
+
+    console.log(currencies);
+  }
+
+
+  function changeValue(num1: number, num2: number) {
+    if (exchangeRates !== null) {
+      const cur1 = document.querySelector(`#currencie-${num1 + 1}`)?.value;
+      const cur2 = document.querySelector(`#currencie-${num2 + 1}`)?.value;
+
+      const curCoeff1 = currencies[cur1];
+      const curCoeff2 = currencies[cur2];
+      const coeff = curCoeff2 / curCoeff1;
+
+
+      valueElems[num1] = Number(document.querySelector(`#value-${num1 + 1}`).value);
+      valueElems[num2] = valueElems[num1] * coeff;
+
+  
+      console.log(curCoeff1, curCoeff2);
+    }
+  }
+
+  getExchangeRates();
+  
 </script>
 
 <main>
   <div>
-    <a href="https://vitejs.dev" target="_blank" rel="noreferrer">
-      <img src={viteLogo} class="logo" alt="Vite Logo" />
-    </a>
-    <a href="https://svelte.dev" target="_blank" rel="noreferrer">
-      <img src={svelteLogo} class="logo svelte" alt="Svelte Logo" />
-    </a>
-  </div>
-  <h1>Vite + Svelte</h1>
+    <div class="input-wrapper">
+      <select name="currencie-1" id="currencie-1" on:change={() => {changeValue(0, 1)}} bind:value={currencieElems[0]}>
+        {#each Object.keys(currencies) as currencie, index}
+          <option value={currencie}>{currencie}</option>
+        {/each}
+      </select>
+      
+      <input id="value-1" type="text" on:input={() => {changeValue(0, 1)}} bind:value={valueElems[0]}>
+    </div>
 
-  <div class="card">
-    <Counter />
-  </div>
 
-  <p>
-    Check out <a href="https://github.com/sveltejs/kit#readme" target="_blank" rel="noreferrer">SvelteKit</a>, the official Svelte app framework powered by Vite!
-  </p>
+    <div class="input-wrapper">
+      <select name="currencie-2" id="currencie-2" on:change={() => {changeValue(1, 0)}} bind:value={currencieElems[1]}>
+        {#each Object.keys(currencies) as currencie, index}
+          <option value={currencie}>{currencie}</option>
+        {/each}
+      </select>
+      <input id="value-2" type="text" on:input={() => {changeValue(1, 0)}} bind:value={valueElems[1]}>
+    </div>
 
-  <p class="read-the-docs">
-    Click on the Vite and Svelte logos to learn more
-  </p>
+  </div>  
 </main>
 
 <style>
-  .logo {
-    height: 6em;
-    padding: 1.5em;
-    will-change: filter;
-    transition: filter 300ms;
-  }
-  .logo:hover {
-    filter: drop-shadow(0 0 2em #646cffaa);
-  }
-  .logo.svelte:hover {
-    filter: drop-shadow(0 0 2em #ff3e00aa);
-  }
-  .read-the-docs {
-    color: #888;
-  }
+
 </style>
