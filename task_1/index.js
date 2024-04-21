@@ -5,15 +5,18 @@ console.log(encoded, translations)
 
 function decodedData(encoded) {
     const decoded = [];
-    for (let ind in encoded) {
+
+    for (const encodedItem of encoded) {
         const elem = {};
-        for (let key in encoded[ind]) {
-            if ( key.includes('Id') && key !== 'groupId' &&  encoded[ind][key] !== null) {
-                elem[key] = translations[encoded[ind][key]];
+
+        for (const key in encodedItem) {
+            if (key.includes('Id') && key !== 'groupId' && encodedItem[key]) {
+                elem[key] = translations[encodedItem[key]];
             } else {
-                elem[key] = encoded[ind][key];
+                elem[key] = encodedItem[key];
             }
         }
+
         decoded.push(elem);
     } 
 
